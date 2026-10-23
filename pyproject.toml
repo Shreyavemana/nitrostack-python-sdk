@@ -8,8 +8,9 @@ version = "0.4.2"
 description = "NitroStack Python SDK — A Python-idiomatic port of the NitroStack MCP framework"
 readme = "README.md"
 requires-python = ">=3.10"
+[project]
 dependencies = [
-    "mcp>=2,<3",
+    "mcp>=2.0.0,<2.7.0",
     "pydantic>=2.0.0",
     "starlette>=0.30.0",
     "uvicorn>=0.20.0",
