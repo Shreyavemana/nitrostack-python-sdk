@@ -14,9 +14,6 @@ from typing import Any, Callable, Dict, List, Literal, Mapping, Optional, Patter
 from nitrostack.transforms import (
     SyntheticTool, ToolArgumentError, TransformContext, validate_tool_arguments,
 )
-
-from nitrostack.protocol.errors import JsonRpcErrorCode
-
 import mcp.types as types
 from mcp import MCPError
 from mcp.server.context import ServerRequestContext
