@@ -377,19 +377,35 @@ _WIDGET_OPTIONS_RE = re.compile(r"""WidgetOptions\(\s*route\s*=\s*["']([^"']+)["
 _WIDGET_ROUTE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 
 
+
 def _collect_widget_routes(root: str) -> List[Tuple[str, str]]:
     found: List[Tuple[str, str]] = []
     seen: Set[str] = set()
+    root_abs = os.path.abspath(root)
+
     for path in sorted(_iter_python_files(root)):
+        rel_path = os.path.relpath(path, root_abs)
+        parts = os.path.normpath(rel_path).split(os.sep)
+
+        # Ignore a vendored copy of the NitroStack SDK.
+        if "vendor" in parts and "nitrostack" in parts:
+            continue
+
         try:
             text = _read(path)
         except OSError:
             continue
-        for route in _WIDGET_DECORATOR_RE.findall(text) + _WIDGET_OPTIONS_RE.findall(text):
+
+        for route in (
+            _WIDGET_DECORATOR_RE.findall(text)
+            + _WIDGET_OPTIONS_RE.findall(text)
+        ):
             if route not in seen:
                 seen.add(route)
-                found.append((route, os.path.relpath(path, root)))
+                found.append((route, rel_path))
+
     return found
+
 
 
 def validate_widgets(root: str) -> List[ValidationIssue]:
