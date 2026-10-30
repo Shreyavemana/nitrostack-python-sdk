@@ -6,6 +6,34 @@ from nitrostack import RateLimitExceededError, cache, rate_limit
 from nitrostack.core import additional_decorators as deco
 
 
+@pytest.mark.parametrize("bad", [0, -1, 1.5, True])
+def test_rate_limit_rejects_invalid_max(bad):
+    with pytest.raises(ValueError):
+        rate_limit(max=bad, window=1)
+
+
+@pytest.mark.parametrize("bad", [0, -5])
+def test_rate_limit_rejects_non_positive_window(bad):
+    with pytest.raises(ValueError):
+        rate_limit(max=1, window=bad)
+
+
+@pytest.mark.parametrize("bad", [0, -1])
+def test_cache_rejects_non_positive_max_size(bad):
+    with pytest.raises(ValueError):
+        cache(ttl=60, max_size=bad)
+
+
+def test_cache_rejects_non_positive_ttl():
+    with pytest.raises(ValueError):
+        cache(ttl=0)
+
+
+def test_cache_allows_unbounded_and_default_sizes():
+    cache(ttl=60, max_size=None)
+    cache(ttl=60)
+
+
 class Clock:
     def __init__(self):
         self.now = 1000.0
